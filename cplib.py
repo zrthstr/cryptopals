@@ -61,5 +61,9 @@ def freq_analis(string, freq_table=char_freq_en):
     count = Counter(string)
     return sum([ v * freq_table[chr(k)] for k, v in count.items() if chr(k) in freq_table ])
 
+def hamming(a, b):
+    if not len(a) == len(b):
+        raise ValueError("len a not len b")
+    return sum([ bin(a[x] ^ b[x]).count("1") for x in range(len(a))])
 
 
