@@ -1,2 +1,0 @@
-# cryptopals
-https://cryptopals.com
