@@ -6,3 +6,7 @@
 ./cp3.py
 
 ./cp4.py
+
+./cp5.py
+
+./cp6.py

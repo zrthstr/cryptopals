@@ -1,6 +1,6 @@
 
 from base64 import standard_b64encode
-from binascii import hexlify
+from binascii import hexlify, unhexlify
 from collections import Counter
 
 
@@ -61,9 +61,51 @@ def freq_analis(string, freq_table=char_freq_en):
     count = Counter(string)
     return sum([ v * freq_table[chr(k)] for k, v in count.items() if chr(k) in freq_table ])
 
+
 def hamming(a, b):
     if not len(a) == len(b):
         raise ValueError("len a not len b")
     return sum([ bin(a[x] ^ b[x]).count("1") for x in range(len(a))])
 
 
+def n_hamming(a,b):
+    return hamming(a,b) / len(a)
+
+def find_single_byte_key(string):
+
+    max_freq = 0
+    key = 0
+
+    all_xord = [single_byte_xor(key, string) for key in range(256)]
+    for c, o in enumerate(all_xord):
+        freq = freq_analis(unhexlify(o))
+        if freq > max_freq:
+            max_freq = freq
+            key = c
+    return key
+
+def find_key_size(mini, maxi, secret):
+    assert mini < maxi < len(secret)
+    assert maxi * 4 < len(secret)
+
+    opti_key_len = 0
+    mini_n_ham = 1000
+
+    key_range = range(mini, maxi + 1)
+    for key_len in key_range:
+        c = 0
+        ham = []
+        while True: 
+            start = c * key_len
+            end = start + key_len 
+            if end > len(secret) - key_len:
+                break
+            ham.append(n_hamming(secret[start:end], secret[start+key_len:end+key_len]))
+            c += 1    
+
+        n_ham = sum(ham) / len(ham)    
+        if n_ham < mini_n_ham:
+            opti_key_len = key_len
+            mini_n_ham = n_ham
+
+    return opti_key_len

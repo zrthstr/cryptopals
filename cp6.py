@@ -3,49 +3,15 @@
 # Some Name
 
 import base64
-from cplib import hamming
+from binascii import unhexlify
+from cplib import hamming, find_key_size, find_single_byte_key, rkey_xor
+
 
 def test_haming():
-    a = bytes("this is a test", encoding="ascii")
-    b = bytes("wokka wokka!!!", encoding="ascii")
-    d = hamming(a,b)
-    print("hamming syays :", d)
-
-
-def n_hamming(a,b):
-    return hamming(a,b) / len(a)
-
-
-def find_key_size(mini, maxi, secret):
-    assert mini < maxi < len(secret)
-    assert maxi * 4 < len(secret)
-
-    opti_key_len = 0
-    mini_n_ham = 1000
-
-    key_range = range(mini, maxi + 1)
-    for key_len in key_range:
-        c = 0
-        end = 0
-        ham = []
-        while True: 
-            start = c * key_len
-            end = start + key_len 
-            if end > len(secret) - key_len:
-                break
-            #print(start, end, start + key_len, end + key_len)
-            ham.append(n_hamming(secret[start:end], secret[start+key_len:end+key_len]))
-            c += 1    
-        n_ham = sum(ham) / len(ham)    
-        #print(n_ham, ham)
-
-        if n_ham < mini_n_ham:
-            opti_key_len = key_len
-            mini_n_ham = n_ham
-
-
-    print("opti_key_len: ",opti_key_len)
-    print("mini_n_ham: ", mini_n_ham)
+    test_a = bytes("this is a test", encoding="ascii")
+    test_b = bytes("wokka wokka!!!", encoding="ascii")
+    test_d = hamming(test_a, test_b)
+    print("hamming syays :", test_d)
 
 def main():
 
@@ -53,15 +19,12 @@ def main():
         inp = "".join(f.read().splitlines())
 
     inp = base64.standard_b64decode(inp)
+    key_size = find_key_size(4, 41, inp)
+    key = bytes([find_single_byte_key(inp[k::key_size]) for k in range(key_size)])
 
-    print(inp)
-    find_key_size(4,40,inp)
-
-
-    str_in = ""
-    correct = ""
-    out = ""
-    print("in: %s\nout: %s \ncorret: %s" %(str_in, out, correct))
+    print("key_size: %s" % key_size)
+    print("key: %s" % key)
+    print(unhexlify(rkey_xor(key, inp)))
 
 
 if __name__ == "__main__":
