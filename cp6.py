@@ -1,6 +1,6 @@
 #!/bin/env python3
-# cryptopals 0.0
-# Some Name
+# cryptopals 1.6
+# Break repeating-key XOR
 
 import base64
 from binascii import unhexlify
