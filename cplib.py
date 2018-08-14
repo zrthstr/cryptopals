@@ -109,3 +109,10 @@ def find_key_size(mini, maxi, secret):
             mini_n_ham = n_ham
 
     return opti_key_len
+
+def pad(bstring, scheme="PKCS#7", pad_to=16):
+    assert scheme == "PKCS#7"
+    pad = pad_to - len(bstring) % pad_to
+    padding = chr(pad) * pad
+    return bstring + bytes(padding, "ascii")
+

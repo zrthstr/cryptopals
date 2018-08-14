@@ -2,22 +2,18 @@
 # cryptopals 2.1
 # Implement PKCS#7 padding
 
-#from cplib import hex_to_base64
+from cplib import pad
 
-def pad(bstring, scheme="PKCS#7", pad_to=16):
-    assert scheme == "PKCS#7"
-    pad = pad_to - len(bstring) % pad_to
-    padding = chr(pad) * pad
-    return bstring + bytes(padding, "ascii")
-
-
-def main():
+def test():
     test = [ (c + 1) * chr(x + ord("a") )  for c, x in enumerate(range(26))]
     print(test)
 
     for t in test:
         print("in  : ", bytes(t, "ascii"))
         print("out : ", pad(bytes(t, "ascii")), "\n")
+
+
+def main():
 
     test1 = bytes("YELLOW SUBMARINE", "ascii")
     print("test1: ", test1 )
