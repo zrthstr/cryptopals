@@ -2,7 +2,7 @@
 from base64 import standard_b64encode
 from binascii import hexlify, unhexlify
 from collections import Counter
-
+from Crypto.Cipher import AES
 
 
 def hex_to_base64(h):
@@ -124,4 +124,24 @@ def pad(bstring, scheme="PKCS#7", pad_to=16):
         pad = 0
     padding = chr(pad) * pad
     return bstring + bytes(padding, "ascii")
+
+
+def blocklify(to_split, size):
+    assert size > 0
+    return [to_split[i:i+size] for i in range(0, len(to_split), size)]
+
+
+def aes_cbc(iv, key, secret):
+    cipher = AES.new(key, AES.MODE_ECB)
+    blocks = blocklify(secret, 16)
+    blocks[-1] = pad(blocks[-1])
+
+    out_blocks = bytes()
+    for block in blocks:
+        out = rkey_xor(iv,   cipher.decrypt(block))
+        out_blocks += out
+        iv = block
+
+    return out_blocks
+
 
