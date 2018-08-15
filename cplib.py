@@ -23,11 +23,18 @@ def single_byte_xor(key, string):
     return hexlify(bytearray(out))
 
 
+#def rkey_xor(rkey, string):
+#    multi = len(string) // len(rkey) + 1
+#    rkey = rkey * multi
+#    out = [rkey[x] ^ string[x] for x in range(len(string))]
+#    return hexlify(bytearray(out))
+
+
 def rkey_xor(rkey, string):
     multi = len(string) // len(rkey) + 1
     rkey = rkey * multi
     out = [rkey[x] ^ string[x] for x in range(len(string))]
-    return hexlify(bytearray(out))
+    return bytes(out)
 
 
 
@@ -113,6 +120,8 @@ def find_key_size(mini, maxi, secret):
 def pad(bstring, scheme="PKCS#7", pad_to=16):
     assert scheme == "PKCS#7"
     pad = pad_to - len(bstring) % pad_to
+    if pad == pad_to:
+        pad = 0
     padding = chr(pad) * pad
     return bstring + bytes(padding, "ascii")
 

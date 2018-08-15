@@ -15,6 +15,8 @@ def test():
 
 def main():
 
+    test()
+
     test1 = bytes("YELLOW SUBMARINE", "ascii")
     print("test1: ", test1 )
     print("test1: ", pad(test1, pad_to=20))

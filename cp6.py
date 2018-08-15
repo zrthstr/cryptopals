@@ -24,7 +24,8 @@ def main():
 
     print("key_size: %s" % key_size)
     print("key: %s" % key)
-    print(unhexlify(rkey_xor(key, inp)))
+    #print(unhexlify(rkey_xor(key, inp)))
+    print(rkey_xor(key, inp))
 
 
 if __name__ == "__main__":

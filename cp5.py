@@ -15,7 +15,7 @@ e27282f"
 
 def main():
     key = bytearray("ICE", "ascii")
-    str_out = rkey_xor(key, str_in )
+    str_out = hexlify(rkey_xor(key, str_in ))
     print("in: %s\nstr_out: %s\nstr_correct: %s" % (str_in, str_out, str_correct))
     #print( rkey_xor(str.encode("ICE"), str.encode(str_in[1])))
 if __name__ == "__main__":
