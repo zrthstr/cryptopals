@@ -25,7 +25,7 @@ def main():
     assert 16 == chk_block_size()
         
     #u_plain = standard_b64decode(base_to_append)
-    u_plain = bytes("0123456789ABCDEF", "ascii")
+    u_plain = bytes("0123456789ABCDE0", "ascii")
     secret_key = rand16bytes() 
     rec_key = bytes()
 
