@@ -3,11 +3,24 @@ from base64 import standard_b64encode
 from binascii import hexlify, unhexlify
 from collections import Counter
 from Crypto.Cipher import AES
+from random import getrandbits
 
 
 def hex_to_base64(h):
     h = bytes.fromhex(h)
     return standard_b64encode(h)
+
+
+def encryption_oracle(bstring):
+    if has_duplicate_blocks(bstring):
+        return "ecb"
+    else:
+        return "cbc"
+
+
+def has_duplicate_blocks(bstring, size=16):
+    blocks = blocklify(bstring, size)
+    return not len(set(blocks)) == len(blocks)
 
 
 def fixed_xor(a,b):
@@ -141,7 +154,17 @@ def aes_cbc(iv, key, secret):
         out = rkey_xor(iv,   cipher.decrypt(block))
         out_blocks += out
         iv = block
-
     return out_blocks
+
+
+def aes_ecb(key, secret):
+    from Crypto.Cipher import AES
+    cipher = AES.new(key, AES.MODE_ECB)
+    from cplib import pad
+    return cipher.encrypt(pad(secret))
+
+
+def rand16bytes():
+    return bytes(getrandbits(8) for _ in range(16))
 
 
