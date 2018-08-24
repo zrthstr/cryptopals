@@ -167,4 +167,16 @@ def aes_ecb(key, secret):
 def rand16bytes():
     return bytes(getrandbits(8) for _ in range(16))
 
+def randbytes(n):
+    assert n > -1
+    return bytes(getrandbits(8) for _ in range(n))
 
+def chk_block_size():
+    key = rand16bytes()
+    for s in range(24 * 3 - 1):
+        if has_duplicate_blocks(aes_ecb(key, bytes( s * "a", 'ascii'))):
+            if s >= 24 * 2:
+                return 24
+            if s >= 16 * 2:
+                return 16
+            return 8
