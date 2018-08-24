@@ -7,6 +7,8 @@ from cplib import rand16bytes, aes_ecb, encryption_oracle, has_duplicate_blocks,
 
 base_to_append = """Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"""
 
+#base_to_append = """Um9sbGiAodsahdohJSAOIJsjaiiAohoidhaAHispsiluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"""
+
 def chk_block_size():
     key = rand16bytes()
     for s in range(24 * 3 - 1):
@@ -17,37 +19,39 @@ def chk_block_size():
                 return 16
             return 8
 
+from random import getrandbits
+def randbytes(n):
+    assert n > -1
+    return bytes(getrandbits(8) for _ in range(n))
+    
 
 def main():
-    assert 16 == chk_block_size()
-    block_size = 16
-        
+    block_size = chk_block_size()
+    assert block_size == 16
+    
     secret_key = rand16bytes() 
-    recovered_plaintext = bytes()
-    #unknown_plaintext = standard_b64decode(base_to_append)
-    unknown_plaintext = bytes("0123456789ABCDEF", "ascii")
-    #unknown_plaintext = bytes("123456789abcdef0123456789ABCDEF", "ascii")
+    recovered_plaintext = rand16bytes()[1:]
+    recovered_plaintext2 = recovered_plaintext
+    unknown_plaintext = standard_b64decode(base_to_append)
+    padding = randbytes((len(unknown_plaintext) // block_size + 1) * block_size) 
 
-    for c in range(1, len(unknown_plaintext) + 1):
-        cc = c
-        if cc > 15:
-            cc -= 16
-        print("CC", cc)
+    print(len(padding), padding)
 
-        known_plaintext = [pad( bytes(chr(x), 'ascii') + recovered_plaintext) for x in range(128)]
-        len_pad = len(known_plaintext[0] + unknown_plaintext) % block_size + cc
-        pading = bytes("B" * len_pad, 'ascii')
-
-        for this_known_plaintext in known_plaintext:
-            to_crypt = this_known_plaintext + pading + unknown_plaintext
+    for _ in range(len(unknown_plaintext)):
+        for this in range(0,128):
+            this = bytes(chr(this), 'ascii')
+        
+            to_crypt = recovered_plaintext[-15:] + this + padding + recovered_plaintext2 + unknown_plaintext
+            
             if has_duplicate_blocks(aes_ecb(secret_key, to_crypt)):
-                recovered_plaintext = bytes(chr(this_known_plaintext[0]), 'ascii') + recovered_plaintext
-                print(">>>> rec_key:", recovered_plaintext)
+                recovered_plaintext += this
+                print(">>>> foun new letter:", this, recovered_plaintext)
                 break
-        else:
-            print("did not recover key, quitting")
-            break
+        print(".", end="")
+   
+        padding = padding[:-1]
 
+    print("Recovered plaintext seems to be: ", recovered_plaintext[block_size-1:])
 
 if __name__ == "__main__":
     main()
